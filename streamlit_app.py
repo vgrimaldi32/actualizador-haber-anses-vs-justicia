@@ -3,7 +3,6 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# Aumentos de movilidad preprocesados
 data = []
 
 df = pd.DataFrame(data)
