@@ -7,7 +7,7 @@ from datetime import datetime
 data = []
 
 df = pd.DataFrame(data)
-df['fecha'] = pd.to_datetime(df['fecha'], format="%Y-%m")
+df["fecha"] = pd.to_datetime(df["fecha"], format="%Y-%m")
 
 st.title("Actualizador de Haber – Comparación ANSeS vs Justicia")
 

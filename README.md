@@ -1,4 +1,3 @@
-# Actualizador Haber – ANSeS vs Justicia
+# Comparador de Haber
 
-Calculadora que compara el haber actualizado por ANSeS con el que correspondería aplicar si se siguieran los coeficientes usados por la justicia.
-
+Calculadora que compara actualización por ANSeS vs Justicia.
