@@ -3,28 +3,30 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# Cargar coeficientes desde archivos CSV
 df_anses = pd.read_csv("coef_anses.csv", sep=";")
 df_justicia = pd.read_csv("coef_justicia.csv", sep=";")
 
-# Convertir comas por puntos y asegurar tipos numéricos
 df_anses["coef_anses"] = df_anses["coef_anses"].astype(str).str.replace(",", ".").astype(float)
 df_justicia["coef_justicia"] = df_justicia["coef_justicia"].astype(str).str.replace(",", ".").astype(float)
 
-# Unir ambos por fecha
 df = pd.merge(df_anses, df_justicia, on="fecha")
 df["fecha"] = pd.to_datetime(df["fecha"], format="%Y-%m")
 
 st.title("Actualizador de Haber – Comparación ANSeS vs Justicia")
 
-haber_inicial = st.number_input("Ingrese el haber base", value=53036.00, format="%.2f")
+haber_input = st.text_input("Ingrese el haber base", "53036,00")
+try:
+    haber_inicial = float(haber_input.replace(",", "."))
+except ValueError:
+    st.error("⚠ Ingresá el haber en formato numérico válido (ej: 53036.00 o 53036,00)")
+    st.stop()
+
 fecha_base = st.text_input("Fecha del haber base (YYYY-MM)", "2020-01")
 
 try:
-    fecha_base_dt = datetime.strptime(fecha_base, "%%Y-%%m")
+    fecha_base_dt = datetime.strptime(fecha_base, "%Y-%m")
 
-    # Insertar marzo 2020 si corresponde
-    marzo_dt = datetime.strptime("2020-03", "%%Y-%%m")
+    marzo_dt = datetime.strptime("2020-03", "%Y-%m")
     if fecha_base_dt < marzo_dt:
         coef_marzo_2020 = 1.023 + (1500 / haber_inicial)
         nueva_fila = pd.DataFrame([{
@@ -35,7 +37,7 @@ try:
         df = pd.concat([df, nueva_fila], ignore_index=True)
         df = df.sort_values("fecha")
 
-    # Filtrar coeficientes posteriores a la fecha base
+    df["fecha"] = pd.to_datetime(df["fecha"])
     df_tramo = df[df["fecha"] > fecha_base_dt].copy()
 
     if not df_tramo.empty:
