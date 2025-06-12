@@ -2,20 +2,40 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import json
 
-# Aumentos de movilidad preprocesados
-data = json.loads("""[]""")
-df = pd.DataFrame(data)
+# Cargar coeficientes desde archivos CSV
+df_anses = pd.read_csv("coef_anses.csv", sep=";")
+df_justicia = pd.read_csv("coef_justicia.csv", sep=";")
+
+# Convertir comas por puntos y asegurar tipos numéricos
+df_anses["coef_anses"] = df_anses["coef_anses"].astype(str).str.replace(",", ".").astype(float)
+df_justicia["coef_justicia"] = df_justicia["coef_justicia"].astype(str).str.replace(",", ".").astype(float)
+
+# Unir ambos por fecha
+df = pd.merge(df_anses, df_justicia, on="fecha")
 df["fecha"] = pd.to_datetime(df["fecha"], format="%Y-%m")
 
 st.title("Actualizador de Haber – Comparación ANSeS vs Justicia")
 
 haber_inicial = st.number_input("Ingrese el haber base", value=53036.00, format="%.2f")
-fecha_base = st.text_input("Fecha del haber base (YYYY-MM)", "2020-04")
+fecha_base = st.text_input("Fecha del haber base (YYYY-MM)", "2020-01")
 
 try:
-    fecha_base_dt = datetime.strptime(fecha_base, "%Y-%m")
+    fecha_base_dt = datetime.strptime(fecha_base, "%%Y-%%m")
+
+    # Insertar marzo 2020 si corresponde
+    marzo_dt = datetime.strptime("2020-03", "%%Y-%%m")
+    if fecha_base_dt < marzo_dt:
+        coef_marzo_2020 = 1.023 + (1500 / haber_inicial)
+        nueva_fila = pd.DataFrame([{
+            "fecha": marzo_dt,
+            "coef_anses": coef_marzo_2020,
+            "coef_justicia": coef_marzo_2020
+        }])
+        df = pd.concat([df, nueva_fila], ignore_index=True)
+        df = df.sort_values("fecha")
+
+    # Filtrar coeficientes posteriores a la fecha base
     df_tramo = df[df["fecha"] > fecha_base_dt].copy()
 
     if not df_tramo.empty:
@@ -28,9 +48,9 @@ try:
         diferencia_pct = (diferencia / haber_anses * 100) if haber_anses != 0 else 0
 
         st.subheader("Resultados:")
-        st.write("**Haber actualizado según ANSeS:** ${:,.2f}".format(haber_anses))
-        st.write("**Haber actualizado según Justicia:** ${:,.2f}".format(haber_justicia))
-        st.write("**Diferencia:** ${:,.2f} ({:.2f}%%)".format(diferencia, diferencia_pct))
+        st.write("**Haber actualizado según ANSeS:** ${{:,.2f}}".format(haber_anses))
+        st.write("**Haber actualizado según Justicia:** ${{:,.2f}}".format(haber_justicia))
+        st.write("**Diferencia:** ${{:,.2f}} ({{:.2f}}%%)".format(diferencia, diferencia_pct))
     else:
         st.warning("No hay coeficientes posteriores a la fecha ingresada.")
 except ValueError:

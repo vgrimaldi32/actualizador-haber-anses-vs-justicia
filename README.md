@@ -1,3 +1,1 @@
-# Comparador de Haber
-
-Calculadora que compara actualización por ANSeS vs Justicia.
+# Comparador de Haber con marzo 2020 dinámico\n\nLee coeficientes desde archivos CSV y calcula marzo 2020 según el haber.
