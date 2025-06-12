@@ -2,9 +2,10 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import json
 
-data = []
-
+# Aumentos de movilidad preprocesados
+data = json.loads("""[]""")
 df = pd.DataFrame(data)
 df["fecha"] = pd.to_datetime(df["fecha"], format="%Y-%m")
 
@@ -27,9 +28,9 @@ try:
         diferencia_pct = (diferencia / haber_anses * 100) if haber_anses != 0 else 0
 
         st.subheader("Resultados:")
-        st.write("**Haber actualizado según ANSeS:** ${{:,.2f}}".format(haber_anses))
-        st.write("**Haber actualizado según Justicia:** ${{:,.2f}}".format(haber_justicia))
-        st.write("**Diferencia:** ${{:,.2f}} ({{:.2f}}%)".format(diferencia, diferencia_pct))
+        st.write("**Haber actualizado según ANSeS:** ${:,.2f}".format(haber_anses))
+        st.write("**Haber actualizado según Justicia:** ${:,.2f}".format(haber_justicia))
+        st.write("**Diferencia:** ${:,.2f} ({:.2f}%%)".format(diferencia, diferencia_pct))
     else:
         st.warning("No hay coeficientes posteriores a la fecha ingresada.")
 except ValueError:
