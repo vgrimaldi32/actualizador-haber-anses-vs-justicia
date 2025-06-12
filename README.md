@@ -1,1 +1,1 @@
-# Comparador de Haber – acepta coma decimal
+# Comparador de Haber – con formato legible

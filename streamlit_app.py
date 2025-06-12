@@ -50,9 +50,9 @@ try:
         diferencia_pct = (diferencia / haber_anses * 100) if haber_anses != 0 else 0
 
         st.subheader("Resultados:")
-        st.write("**Haber actualizado según ANSeS:** ${{:,.2f}}".format(haber_anses))
-        st.write("**Haber actualizado según Justicia:** ${{:,.2f}}".format(haber_justicia))
-        st.write("**Diferencia:** ${{:,.2f}} ({{:.2f}}%%)".format(diferencia, diferencia_pct))
+        st.write(f"**Haber actualizado según ANSeS:** ${haber_anses:,.2f}")
+        st.write(f"**Haber actualizado según Justicia:** ${haber_justicia:,.2f}")
+        st.write(f"**Diferencia:** ${diferencia:,.2f} ({diferencia_pct:.2f}%%)")
     else:
         st.warning("No hay coeficientes posteriores a la fecha ingresada.")
 except ValueError:
